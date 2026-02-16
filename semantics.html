@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hub de Domínio Semântico IA: Canvas vs. Nanobanana</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+    <!-- Chosen Palette: Calm Harmony (Warm Neutrals + Focused Accents) -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FAFAF9; /* Warm Neutral Background */
+            color: #44403C; /* Warm Gray Text */
+        }
+        
+        h1, h2, h3, .serif-font {
+            font-family: 'Merriweather', serif;
+        }
+
+        /* Chart Container Styling - MANDATORY */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px; /* Max width constraint */
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px; /* Base height */
+            max-height: 400px;
+        }
+        
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px; /* Taller on desktop */
+            }
+        }
+
+        .card-transition {
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .card-transition:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Active State Classes for Toggles */
+        .mode-active-canvas {
+            background-color: #4338CA; /* Indigo 700 */
+            color: white;
+            border-color: #4338CA;
+        }
+        
+        .mode-active-nano {
+            background-color: #BE185D; /* Pink 700 */
+            color: white;
+            border-color: #BE185D;
+        }
+
+        .mode-inactive {
+            background-color: white;
+            color: #78716C; /* Warm Gray 500 */
+            border-color: #E7E5E4; /* Warm Gray 200 */
+        }
+    </style>
+
+    <!-- Application Structure Plan:
+         1. Header: Intro & Context setting.
+         2. Context Switcher (The Core): A top-level toggle between "Canvas (Text)" and "Nanobanana (Image)". This drives the entire UI state.
+         3. Semantic Radar (Visualization): A radar chart showing how the 6 terms skew towards Logic/Structure (Canvas) vs. Sensory/Form (Nano). Updates on toggle.
+         4. Term Dictionary (Interactive Grid): Cards for the 6 terms (Design, Layout, etc.) that change content dynamically based on the active mode.
+         5. Conflict Zone (Comparison): A section specifically for the "Contrastes Críticos" (Design vs Style, etc.) using a side-by-side comparison layout.
+         6. Prompt Builder (Interactive Tool): A "Mad Libs" style section to construct a prompt based on the formulas in the guide.
+    -->
+
+    <!-- Visualization & Content Choices:
+         - Radar Chart: Goal -> Inform/Compare. Shows the multidimensional shift of meaning for the SAME words. Canvas = High Logic/Structure scores. Nano = High Visual/Form scores.
+         - Interactive Cards: Goal -> Inform/Organize. Digestible chunks of the definitions.
+         - Comparison View: Goal -> Compare. Side-by-side breakdown of the "Contrastes Críticos".
+         - Library: Chart.js for the Radar. Vanilla JS for all DOM manipulation.
+    -->
+
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+</head>
+<body class="antialiased selection:bg-stone-200 selection:text-stone-900">
+
+    <!-- Navigation / Header -->
+    <header class="bg-white border-b border-stone-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <span class="text-2xl">🧠</span>
+                <h1 class="text-xl font-bold text-stone-800 tracking-tight">Guia Semântico IA</h1>
+            </div>
+            <nav class="hidden md:flex space-x-8 text-sm font-medium text-stone-500">
+                <a href="#contexto" class="hover:text-stone-900 transition-colors">Contexto</a>
+                <a href="#termos" class="hover:text-stone-900 transition-colors">Termos</a>
+                <a href="#contrastes" class="hover:text-stone-900 transition-colors">Contrastes</a>
+                <a href="#formulas" class="hover:text-stone-900 transition-colors">Fórmulas</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-16">
+
+        <!-- Section 1: Introduction & Mode Selection -->
+        <section id="contexto" class="text-center space-y-6 max-w-4xl mx-auto">
+            <h2 class="text-4xl md:text-5xl font-bold text-stone-800 leading-tight">
+                A Semântica é o <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-pink-600">Código-Fonte</span>.
+            </h2>
+            <p class="text-lg text-stone-600 leading-relaxed">
+                Palavras como "Design", "Layout" e "Estilo" mudam radicalmente de significado dependendo da ferramenta.
+                Escolha seu contexto abaixo para explorar as definições precisas e evitar alucinações da IA.
+            </p>
+
+            <!-- Context Switcher -->
+            <div class="flex justify-center gap-4 mt-8">
+                <button id="btn-canvas" onclick="setMode('canvas')" class="px-8 py-4 rounded-xl border-2 font-bold text-lg shadow-sm transition-all flex items-center gap-3 mode-active-canvas">
+                    <span>📝</span>
+                    Gemini Canvas
+                    <span class="text-xs font-normal opacity-80 block">(Texto, Lógica, Estrutura)</span>
+                </button>
+                <button id="btn-nano" onclick="setMode('nano')" class="px-8 py-4 rounded-xl border-2 font-bold text-lg shadow-sm transition-all flex items-center gap-3 mode-inactive">
+                    <span>🎨</span>
+                    Nanobanana
+                    <span class="text-xs font-normal opacity-80 block">(Imagem, Pixels, Luz)</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Section 2: Semantic Radar Visualization -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center bg-white rounded-3xl p-8 shadow-sm border border-stone-100">
+            <div class="lg:col-span-5 space-y-4">
+                <h3 class="text-2xl font-bold text-stone-800">Perfil Semântico</h3>
+                <p class="text-stone-600 leading-relaxed">
+                    Este gráfico visualiza onde o peso do significado recai para o contexto selecionado (<span id="radar-context-label" class="font-bold text-indigo-700">Canvas</span>).
+                </p>
+                <div class="space-y-3 pt-4">
+                    <div class="flex items-start gap-3">
+                        <div id="radar-indicator" class="w-1.5 h-1.5 rounded-full bg-indigo-600 mt-2"></div>
+                        <p id="radar-description" class="text-sm text-stone-500">
+                            No <strong>Canvas</strong>, os termos orientam a lógica e a arquitetura da informação. Note como os eixos de "Lógica" e "Estrutura" são dominantes.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="lg:col-span-7 flex justify-center">
+                <div class="chart-container">
+                    <canvas id="semanticRadar"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Term Dictionary (Dynamic Grid) -->
+        <section id="termos">
+            <div class="flex items-end justify-between mb-8 border-b border-stone-200 pb-4">
+                <div>
+                    <h3 class="text-3xl font-bold text-stone-800">Glossário de Precisão</h3>
+                    <p class="text-stone-500 mt-2">Clique nos cards para ver detalhes de uso.</p>
+                </div>
+                <div class="hidden md:block text-sm font-medium px-3 py-1 bg-stone-100 rounded text-stone-600">
+                    Mostrando definições para: <span id="term-context-label" class="text-indigo-700 uppercase tracking-wider">Canvas</span>
+                </div>
+            </div>
+
+            <div id="cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Cards injected via JS -->
+            </div>
+        </section>
+
+        <!-- Section 4: Critical Contrasts -->
+        <section id="contrastes" class="bg-stone-50 rounded-3xl p-8 md:p-12">
+            <div class="max-w-3xl mx-auto text-center mb-10">
+                <h3 class="text-3xl font-bold text-stone-800 mb-4">Contrastes Críticos</h3>
+                <p class="text-stone-600">
+                    Onde a IA mais se confunde. Entenda as batalhas semânticas para evitar resultados inesperados.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Contrast 1: Design vs Aesthetics -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-stone-100 flex flex-col h-full">
+                    <div class="mb-4 pb-4 border-b border-stone-100">
+                        <h4 class="text-lg font-bold text-stone-800">Função vs. Sensação</h4>
+                        <p class="text-xs font-bold text-amber-600 uppercase tracking-wide mt-1">Design vs. Estética</p>
+                    </div>
+                    <div class="space-y-4 flex-grow">
+                        <div>
+                            <span class="text-xs font-semibold text-stone-400 uppercase">Se você pedir "Design":</span>
+                            <p class="text-sm text-stone-700 mt-1">A IA foca na <strong>Estrutura/Forma</strong>. Muda a silhueta, o solado do tênis, a arquitetura física.</p>
+                        </div>
+                        <div>
+                            <span class="text-xs font-semibold text-stone-400 uppercase">Se você pedir "Estética":</span>
+                            <p class="text-sm text-stone-700 mt-1">A IA foca na <strong>Pintura/Vibe</strong>. Muda as cores, o acabamento, o tema (ex: neon), mas mantém a forma.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contrast 2: Design vs Style -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-stone-100 flex flex-col h-full">
+                    <div class="mb-4 pb-4 border-b border-stone-100">
+                        <h4 class="text-lg font-bold text-stone-800">Objeto vs. Mídia</h4>
+                        <p class="text-xs font-bold text-amber-600 uppercase tracking-wide mt-1">Design vs. Estilo</p>
+                    </div>
+                    <div class="space-y-4 flex-grow">
+                        <div>
+                            <span class="text-xs font-semibold text-stone-400 uppercase">Se você pedir "Design":</span>
+                            <p class="text-sm text-stone-700 mt-1">Muda <strong>o que é</strong> o objeto. Um prédio brutalista terá concreto e poucas janelas.</p>
+                        </div>
+                        <div>
+                            <span class="text-xs font-semibold text-stone-400 uppercase">Se você pedir "Estilo":</span>
+                            <p class="text-sm text-stone-700 mt-1">Muda <strong>como foi feito</strong>. Pode gerar uma pintura a óleo ou uma foto granulada desse prédio.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contrast 3: Layout vs Design -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-stone-100 flex flex-col h-full">
+                    <div class="mb-4 pb-4 border-b border-stone-100">
+                        <h4 class="text-lg font-bold text-stone-800">Onde vs. Como</h4>
+                        <p class="text-xs font-bold text-amber-600 uppercase tracking-wide mt-1">Layout vs. Design</p>
+                    </div>
+                    <div class="space-y-4 flex-grow">
+                        <div>
+                            <span class="text-xs font-semibold text-stone-400 uppercase">Se você pedir "Layout":</span>
+                            <p class="text-sm text-stone-700 mt-1">Muda o <strong>Espaço</strong>. Em uma revista, altera margens, posição do texto e espaços em branco.</p>
+                        </div>
+                        <div>
+                            <span class="text-xs font-semibold text-stone-400 uppercase">Se você pedir "Design":</span>
+                            <p class="text-sm text-stone-700 mt-1">Muda os <strong>Elementos</strong>. Altera a fonte escolhida, o logotipo e as formas gráficas.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: Formula Builder -->
+        <section id="formulas">
+            <div class="bg-stone-900 rounded-3xl p-8 md:p-12 text-stone-300">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    <!-- Text Formula -->
+                    <div class="space-y-6 border-r border-stone-700 pr-0 lg:pr-12">
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="text-2xl">📝</span>
+                            <h3 class="text-2xl font-bold text-white">Fórmula Canvas</h3>
+                        </div>
+                        <div class="font-mono bg-stone-800 p-4 rounded-lg text-sm md:text-base border border-stone-700">
+                            <span class="text-indigo-400">[Propósito + Design]</span> + 
+                            <span class="text-blue-400">[Estrutura + Layout]</span> + 
+                            <span class="text-teal-400">[Tom + Estética]</span>
+                        </div>
+                        <ul class="space-y-3 text-sm">
+                            <li class="flex gap-2">
+                                <span class="text-indigo-400 font-bold">1.</span>
+                                <span>Defina o <strong>Propósito</strong> (ex: "Guia de Estudo").</span>
+                            </li>
+                            <li class="flex gap-2">
+                                <span class="text-blue-400 font-bold">2.</span>
+                                <span>Defina a <strong>Estrutura</strong> (ex: "Hierarquia H1/H2").</span>
+                            </li>
+                            <li class="flex gap-2">
+                                <span class="text-teal-400 font-bold">3.</span>
+                                <span>Defina o <strong>Tom</strong> (ex: "Encorajador").</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Image Formula -->
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="text-2xl">🎨</span>
+                            <h3 class="text-2xl font-bold text-white">Fórmula Nanobanana</h3>
+                        </div>
+                        <div class="font-mono bg-stone-800 p-4 rounded-lg text-sm md:text-base border border-stone-700">
+                            <span class="text-pink-400">[Sujeito + Design]</span> + 
+                            <span class="text-fuchsia-400">[Layout]</span> + 
+                            <span class="text-purple-400">[Estilo + Aspecto]</span> + 
+                            <span class="text-violet-400">[Atmosfera]</span>
+                        </div>
+                        <ul class="space-y-3 text-sm">
+                            <li class="flex gap-2">
+                                <span class="text-pink-400 font-bold">1.</span>
+                                <span>Defina o <strong>Sujeito</strong> (ex: "Cadeira Orgânica").</span>
+                            </li>
+                            <li class="flex gap-2">
+                                <span class="text-fuchsia-400 font-bold">2.</span>
+                                <span>Defina o <strong>Layout</strong> (ex: "Ângulo Baixo").</span>
+                            </li>
+                            <li class="flex gap-2">
+                                <span class="text-purple-400 font-bold">3.</span>
+                                <span>Defina o <strong>Estilo</strong> (ex: "Cyberpunk, Cromado").</span>
+                            </li>
+                            <li class="flex gap-2">
+                                <span class="text-violet-400 font-bold">4.</span>
+                                <span>Defina a <strong>Atmosfera</strong> (ex: "Noir, Neblina").</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-white border-t border-stone-200 mt-20 py-10">
+        <div class="max-w-7xl mx-auto px-4 text-center text-stone-500 text-sm">
+            <p class="font-medium">Guia de Domínio Semântico: Canvas & Nanobanana</p>
+            <p class="mt-2">Use este guia para alinhar sua intenção com a interpretação da IA.</p>
+        </div>
+    </footer>
+
+    <!-- Script Logic -->
+    <script>
+        // Data Store
+        const appData = {
+            canvas: {
+                themeColor: '#4338CA', // Indigo
+                chartData: [90, 85, 40, 60, 80, 70], // Design, Layout, Visual, Estética, Atmosfera, Estilo (Logic focused)
+                description: 'No <strong>Canvas</strong>, os termos orientam a lógica e a arquitetura da informação. Note como os eixos de "Lógica" e "Estrutura" são dominantes.',
+                terms: [
+                    {
+                        title: 'Design',
+                        subtitle: 'Lógica e Propósito',
+                        icon: '🏗️',
+                        question: 'Qual problema este texto resolve?',
+                        usage: 'Definir objetivos de aprendizado, estruturas de código ou planos.',
+                        example: '"Adote um <em>design instrucional</em> focado em iniciantes."'
+                    },
+                    {
+                        title: 'Layout',
+                        subtitle: 'Organização Espacial',
+                        icon: '📐',
+                        question: 'Onde as informações estão?',
+                        usage: 'Pedir bullet points, tabelas, cabeçalhos (H1, H2), negritos.',
+                        example: '"Crie um <em>layout</em> escaneável, com muitos espaços em branco."'
+                    },
+                    {
+                        title: 'Visual',
+                        subtitle: 'Elementos de Apoio',
+                        icon: '👁️',
+                        question: 'O que quebra a monotonia?',
+                        usage: 'Solicitar emojis, ícones, divisores ou blocos de código.',
+                        example: '"Enriqueça o <em>visual</em> com emojis relevantes."'
+                    },
+                    {
+                        title: 'Estética',
+                        subtitle: 'Identidade do Documento',
+                        icon: '🎨',
+                        question: 'Qual a sensação do documento?',
+                        usage: 'Definir se é moderno, clássico, "clean" ou denso.',
+                        example: '"Mantenha uma <em>estética</em> minimalista e corporativa."'
+                    },
+                    {
+                        title: 'Atmosfera',
+                        subtitle: 'Tom de Voz e Fluidez',
+                        icon: '🌬️',
+                        question: 'Como o leitor se sente?',
+                        usage: 'Ajustar empatia, urgência ou leveza.',
+                        example: '"Escreva com uma <em>atmosfera</em> de urgência e mistério."'
+                    },
+                    {
+                        title: 'Estilo',
+                        subtitle: 'Técnica de Escrita',
+                        icon: '🖌️',
+                        question: 'Qual o gênero literário?',
+                        usage: 'Pedir poesia, relatório técnico ou e-mail de vendas.',
+                        example: '"Use um <em>estilo</em> jornalístico investigativo."'
+                    }
+                ]
+            },
+            nano: {
+                themeColor: '#BE185D', // Pink
+                chartData: [85, 95, 90, 80, 95, 85], // Design, Layout, Visual, Estética, Atmosfera, Estilo (Visual focused)
+                description: 'No <strong>Nanobanana</strong>, os termos controlam pixels, geometria e luz. O foco muda inteiramente para a forma física e a composição visual.',
+                terms: [
+                    {
+                        title: 'Design',
+                        subtitle: 'Forma do Objeto',
+                        icon: '🏎️',
+                        question: 'Como é a construção física?',
+                        usage: 'Definir se é quadrado ou curvo, vitoriano ou futurista.',
+                        example: '"Uma cadeira com <em>design</em> orgânico e biomórfico."'
+                    },
+                    {
+                        title: 'Layout',
+                        subtitle: 'Composição da Cena',
+                        icon: '📸',
+                        question: 'Onde está a câmera?',
+                        usage: 'Close-ups, visão aérea, regra dos terços, simetria.',
+                        example: '"Use um <em>layout</em> simétrico com ângulo baixo."'
+                    },
+                    {
+                        title: 'Visual',
+                        subtitle: 'Fidelidade Ótica',
+                        icon: '🕶️',
+                        question: 'Quão nítida é a imagem?',
+                        usage: 'Pedir alta definição (8k), limpeza ou complexidade.',
+                        example: '"Um <em>visual</em> limpo e clean, fundo branco."'
+                    },
+                    {
+                        title: 'Estética',
+                        subtitle: 'Regras do Universo/Vibe',
+                        icon: '🦄',
+                        question: 'Qual a subcultura visual?',
+                        usage: 'Vaporwave, Cyberpunk, Cottagecore, Dark Fantasy.',
+                        example: '"Aplique uma <em>estética</em> Vaporwave (roxo/ciano)."'
+                    },
+                    {
+                        title: 'Atmosfera',
+                        subtitle: 'Iluminação e Clima',
+                        icon: '🌫️',
+                        question: 'Qual o clima meteorológico?',
+                        usage: 'Neblina, raios de sol, chuva, escuridão.',
+                        example: '"Uma <em>atmosfera</em> densa e opressiva com neblina."'
+                    },
+                    {
+                        title: 'Estilo',
+                        subtitle: 'Técnica Artística',
+                        icon: '🖼️',
+                        question: 'Qual a mídia usada?',
+                        usage: 'Óleo sobre tela, Fotografia 35mm, Render 3D, Pixel Art.',
+                        example: '"No <em>estilo</em> de pintura a óleo impressionista."'
+                    }
+                ]
+            }
+        };
+
+        let currentMode = 'canvas';
+        let radarChartInstance = null;
+
+        // Chart.js Init
+        function initChart() {
+            const ctx = document.getElementById('semanticRadar').getContext('2d');
+            
+            // Handle long labels for Chart.js
+            const labels = ['Design (Propósito/Forma)', 'Layout (Diagramação/Câmera)', 'Visual (Gráfico/Ótico)', 'Estética (Identidade/Vibe)', 'Atmosfera (Tom/Luz)', 'Estilo (Técnica/Mídia)'];
+            const wrappedLabels = labels.map(label => label.split(' ')); 
+
+            radarChartInstance = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: wrappedLabels,
+                    datasets: [{
+                        label: 'Relevância Semântica',
+                        data: appData.canvas.chartData,
+                        backgroundColor: 'rgba(67, 56, 202, 0.2)', // Indigo
+                        borderColor: '#4338CA',
+                        pointBackgroundColor: '#4338CA',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: '#4338CA',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(0, 0, 0, 0.05)' },
+                            grid: { color: 'rgba(0, 0, 0, 0.05)' },
+                            pointLabels: {
+                                font: { size: 12, family: "'Inter', sans-serif" },
+                                color: '#57534E'
+                            },
+                            ticks: { display: false, backdropColor: 'transparent' },
+                            suggestedMin: 0,
+                            suggestedMax: 100
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    // Handle multiline labels in tooltip
+                                    const item = tooltipItems[0];
+                                    let label = item.chart.data.labels[item.dataIndex];
+                                    if (Array.isArray(label)) {
+                                        return label.join(' ');
+                                    }
+                                    return label;
+                                }
+                            },
+                            backgroundColor: 'rgba(28, 25, 23, 0.9)',
+                            padding: 12,
+                            bodyFont: { family: "'Inter', sans-serif" }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Card Renderer
+        function renderCards(mode) {
+            const container = document.getElementById('cards-grid');
+            container.innerHTML = ''; // Clear
+            
+            const data = appData[mode].terms;
+            const borderColor = mode === 'canvas' ? 'border-indigo-100' : 'border-pink-100';
+            const iconBg = mode === 'canvas' ? 'bg-indigo-50 text-indigo-600' : 'bg-pink-50 text-pink-600';
+
+            data.forEach(term => {
+                const card = document.createElement('div');
+                card.className = `bg-white rounded-2xl p-6 shadow-sm border ${borderColor} card-transition`;
+                card.innerHTML = `
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="${iconBg} p-3 rounded-xl text-2xl">${term.icon}</div>
+                    </div>
+                    <h4 class="text-xl font-bold text-stone-800">${term.title}</h4>
+                    <p class="text-xs font-bold uppercase tracking-wide text-stone-400 mb-4">${term.subtitle}</p>
+                    
+                    <div class="space-y-3">
+                        <div>
+                            <p class="text-xs text-stone-400 uppercase font-semibold">O que comunica?</p>
+                            <p class="text-sm font-medium text-stone-700 italic">"${term.question}"</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-stone-400 uppercase font-semibold">Quando usar?</p>
+                            <p class="text-sm text-stone-600">${term.usage}</p>
+                        </div>
+                        <div class="pt-3 border-t border-stone-100 mt-2">
+                            <p class="text-xs text-stone-400 uppercase font-semibold mb-1">Exemplo</p>
+                            <p class="text-sm text-stone-800 bg-stone-50 p-2 rounded border border-stone-100">${term.example}</p>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // State Manager
+        window.setMode = function(mode) {
+            currentMode = mode;
+            const data = appData[mode];
+
+            // 1. Update Buttons
+            const btnCanvas = document.getElementById('btn-canvas');
+            const btnNano = document.getElementById('btn-nano');
+
+            if (mode === 'canvas') {
+                btnCanvas.className = "px-8 py-4 rounded-xl border-2 font-bold text-lg shadow-sm transition-all flex items-center gap-3 mode-active-canvas";
+                btnNano.className = "px-8 py-4 rounded-xl border-2 font-bold text-lg shadow-sm transition-all flex items-center gap-3 mode-inactive opacity-60 hover:opacity-100";
+            } else {
+                btnCanvas.className = "px-8 py-4 rounded-xl border-2 font-bold text-lg shadow-sm transition-all flex items-center gap-3 mode-inactive opacity-60 hover:opacity-100";
+                btnNano.className = "px-8 py-4 rounded-xl border-2 font-bold text-lg shadow-sm transition-all flex items-center gap-3 mode-active-nano";
+            }
+
+            // 2. Update Text Context
+            document.getElementById('radar-context-label').innerText = mode === 'canvas' ? 'Canvas' : 'Nanobanana';
+            document.getElementById('radar-context-label').className = mode === 'canvas' ? 'font-bold text-indigo-700' : 'font-bold text-pink-700';
+            
+            document.getElementById('term-context-label').innerText = mode === 'canvas' ? 'Canvas' : 'Nanobanana';
+            document.getElementById('term-context-label').className = mode === 'canvas' ? 'text-indigo-700 uppercase tracking-wider' : 'text-pink-700 uppercase tracking-wider';
+
+            document.getElementById('radar-description').innerHTML = data.description;
+            document.getElementById('radar-indicator').className = mode === 'canvas' ? 'w-1.5 h-1.5 rounded-full bg-indigo-600 mt-2' : 'w-1.5 h-1.5 rounded-full bg-pink-600 mt-2';
+
+            // 3. Update Chart
+            if (radarChartInstance) {
+                radarChartInstance.data.datasets[0].data = data.chartData;
+                radarChartInstance.data.datasets[0].backgroundColor = mode === 'canvas' ? 'rgba(67, 56, 202, 0.2)' : 'rgba(190, 24, 93, 0.2)';
+                radarChartInstance.data.datasets[0].borderColor = data.themeColor;
+                radarChartInstance.data.datasets[0].pointBackgroundColor = data.themeColor;
+                radarChartInstance.data.datasets[0].pointHoverBorderColor = data.themeColor;
+                radarChartInstance.update();
+            }
+
+            // 4. Update Grid
+            renderCards(mode);
+        }
+
+        // Initial Load
+        document.addEventListener('DOMContentLoaded', () => {
+            initChart();
+            renderCards('canvas');
+        });
+
+    </script>
+</body>
+</html>
