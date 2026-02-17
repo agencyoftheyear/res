@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modelos de Orçamento | Benedito Resolve</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
+        .brand-bg { background-color: #052f59; }
+        .brand-text { color: #052f59; }
+        .accent-bg { background-color: #25D366; }
+        .accent-text { color: #25D366; }
+        
+        @media print {
+            .no-print { display: none; }
+            body { background-color: white; }
+            .print-shadow-none { box-shadow: none !important; }
+        }
+
+        /* Estilo para simular papel A4 */
+        .page-preview {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 20mm;
+            margin: 10px auto;
+            background: white;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+
+        @media (max-width: 210mm) {
+            .page-preview {
+                width: 95%;
+                padding: 10mm;
+            }
+        }
+    </style>
+</head>
+<body class="flex flex-col md:flex-row min-h-screen">
+
+    <!-- Menu de Navegação Lateral (no-print) -->
+    <nav class="no-print w-full md:w-64 brand-bg text-white p-6 flex-shrink-0">
+        <div class="flex items-center gap-3 mb-8">
+            <img src="https://i.ibb.co/rGqBK9DT/antes-e-depois.jpg" class="w-10 h-10 rounded bg-white p-1" alt="Logo">
+            <h1 class="font-bold text-lg leading-tight">BENEDITO<br>RESOLVE</h1>
+        </div>
+        
+        <p class="text-xs uppercase tracking-widest text-blue-300 mb-4 font-semibold">Escolha o Modelo</p>
+        <ul class="space-y-2" id="template-menu">
+            <li>
+                <button onclick="showTemplate('classic')" class="menu-btn w-full text-left px-4 py-3 rounded-lg hover:bg-white/10 transition flex items-center gap-3 bg-white/20 font-bold" data-id="classic">
+                    <span class="w-2 h-2 rounded-full bg-white"></span> Clássico Profissional
+                </button>
+            </li>
+            <li>
+                <button onclick="showTemplate('modern')" class="menu-btn w-full text-left px-4 py-3 rounded-lg hover:bg-white/10 transition flex items-center gap-3" data-id="modern">
+                    <span class="w-2 h-2 rounded-full bg-gray-400"></span> Moderno & Limpo
+                </button>
+            </li>
+            <li>
+                <button onclick="showTemplate('minimal')" class="menu-btn w-full text-left px-4 py-3 rounded-lg hover:bg-white/10 transition flex items-center gap-3" data-id="minimal">
+                    <span class="w-2 h-2 rounded-full bg-gray-400"></span> Minimalista Direto
+                </button>
+            </li>
+            <li>
+                <button onclick="showTemplate('visual')" class="menu-btn w-full text-left px-4 py-3 rounded-lg hover:bg-white/10 transition flex items-center gap-3" data-id="visual">
+                    <span class="w-2 h-2 rounded-full bg-gray-400"></span> Visual & Colorido
+                </button>
+            </li>
+            <li>
+                <button onclick="showTemplate('premium')" class="menu-btn w-full text-left px-4 py-3 rounded-lg hover:bg-white/10 transition flex items-center gap-3" data-id="premium">
+                    <span class="w-2 h-2 rounded-full bg-gray-400"></span> Premium Executivo
+                </button>
+            </li>
+        </ul>
+
+        <div class="mt-12 p-4 bg-white/5 rounded-xl border border-white/10">
+            <p class="text-xs text-blue-200 mb-2">Dica de uso:</p>
+            <p class="text-xs leading-relaxed opacity-70">Use estes modelos para enviar orçamentos em PDF via WhatsApp. Transmite muito mais confiança que apenas uma mensagem de texto.</p>
+        </div>
+
+        <button onclick="window.print()" class="mt-8 w-full accent-bg text-white font-bold py-3 rounded-xl shadow-lg hover:scale-105 transition flex items-center justify-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+            Imprimir / Salvar PDF
+        </button>
+    </nav>
+
+    <!-- Área do Conteúdo (Preview) -->
+    <main class="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-200">
+        
+        <div id="template-container">
+            
+            <!-- MODELO 1: CLÁSSICO PROFISSIONAL -->
+            <div id="template-classic" class="template-section">
+                <div class="page-preview flex flex-col">
+                    <div class="flex justify-between items-start border-b-4 border-gray-800 pb-8 mb-8">
+                        <div>
+                            <img src="https://i.ibb.co/rGqBK9DT/antes-e-depois.jpg" class="w-40 h-auto mb-4" alt="Logo">
+                            <h2 class="brand-text text-2xl font-extrabold uppercase tracking-tighter italic">Benedito Resolve</h2>
+                            <p class="text-sm text-gray-500 italic">Manutenções Residenciais Rápidas</p>
+                        </div>
+                        <div class="text-right">
+                            <h1 class="text-4xl font-black text-gray-800 uppercase mb-2">Orçamento</h1>
+                            <p class="font-mono text-gray-400">Nº #2024-001</p>
+                            <p class="text-gray-600 font-bold mt-4">Data: 16 de Fevereiro de 2024</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-8 mb-10">
+                        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                            <h3 class="text-xs uppercase font-bold text-gray-400 mb-2">Cliente</h3>
+                            <p class="font-bold text-gray-800 text-lg">Ricardo Oliveira</p>
+                            <p class="text-sm text-gray-600">Condomínio Solar das Águas, Apto 402</p>
+                            <p class="text-sm text-gray-600">Montes Claros - MG</p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                            <h3 class="text-xs uppercase font-bold text-gray-400 mb-2">Prestador</h3>
+                            <p class="font-bold brand-text text-lg">Benedito Resolve</p>
+                            <p class="text-sm text-gray-600">WhatsApp: (38) 9 9866-2723</p>
+                            <p class="text-sm text-gray-600">Email: contato@beneditoresolve.com</p>
+                        </div>
+                    </div>
+
+                    <table class="w-full text-left mb-10">
+                        <thead>
+                            <tr class="brand-bg text-white">
+                                <th class="p-3 rounded-tl-lg">Descrição do Serviço</th>
+                                <th class="p-3 text-center">Quant.</th>
+                                <th class="p-3 text-right rounded-tr-lg">Valor Total</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200 border-x border-b border-gray-200">
+                            <tr>
+                                <td class="p-4">
+                                    <p class="font-bold text-gray-800">Troca de Chuveiro Elétrico</p>
+                                    <p class="text-xs text-gray-500">Mão de obra para remoção do antigo e instalação de novo chuveiro Lorenzetti.</p>
+                                </td>
+                                <td class="p-4 text-center">01</td>
+                                <td class="p-4 text-right font-semibold">R$ 120,00</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4">
+                                    <p class="font-bold text-gray-800">Reparo em Torneira de Cozinha</p>
+                                    <p class="text-xs text-gray-500">Substituição do reparo (vedante) para eliminar gotejamento.</p>
+                                </td>
+                                <td class="p-4 text-center">01</td>
+                                <td class="p-4 text-right font-semibold">R$ 60,00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="mt-auto">
+                        <div class="flex justify-end mb-10">
+                            <div class="w-64 space-y-2">
+                                <div class="flex justify-between text-gray-600">
+                                    <span>Subtotal:</span>
+                                    <span>R$ 180,00</span>
+                                </div>
+                                <div class="flex justify-between brand-text text-2xl font-black border-t-2 border-gray-800 pt-2">
+                                    <span>TOTAL:</span>
+                                    <span>R$ 180,00</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="border-t border-gray-200 pt-6">
+                            <p class="text-sm font-bold brand-text mb-2">Observações:</p>
+                            <ul class="text-xs text-gray-600 space-y-1 list-disc ml-4">
+                                <li>Validade do orçamento: 07 dias.</li>
+                                <li>Forma de pagamento: PIX, Débito ou Dinheiro.</li>
+                                <li>Garantia de 90 dias sobre a mão de obra executada.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODELO 2: MODERNO & LIMPO -->
+            <div id="template-modern" class="template-section hidden">
+                <div class="page-preview flex flex-col bg-slate-50">
+                    <div class="flex items-center gap-6 mb-12">
+                        <img src="https://i.ibb.co/rGqBK9DT/antes-e-depois.jpg" class="w-32 h-32 rounded-full border-4 border-white shadow-lg" alt="Logo">
+                        <div>
+                            <h1 class="text-4xl font-black brand-text">Proposta de Serviço</h1>
+                            <p class="accent-text font-bold tracking-widest uppercase text-sm">Agilidade e Confiança</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-8 rounded-2xl shadow-sm mb-8 flex justify-between items-center border-l-8 border-accent">
+                        <div>
+                            <p class="text-gray-400 text-xs uppercase font-bold">Cliente</p>
+                            <p class="text-xl font-bold text-gray-800">Mariana Souza</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-gray-400 text-xs uppercase font-bold">Data de Emissão</p>
+                            <p class="text-lg font-semibold text-gray-800">16/02/2024</p>
+                        </div>
+                    </div>
+
+                    <h3 class="font-bold text-gray-500 mb-4 px-2">DETALHAMENTO DOS SERVIÇOS</h3>
+                    <div class="space-y-4 mb-12">
+                        <div class="bg-white p-6 rounded-xl flex justify-between items-center shadow-sm hover:shadow-md transition border border-gray-100">
+                            <div>
+                                <p class="font-bold brand-text text-lg">Instalação de Suporte de TV</p>
+                                <p class="text-sm text-gray-500">Até 65 polegadas em parede de alvenaria.</p>
+                            </div>
+                            <p class="text-xl font-black text-gray-700">R$ 150,00</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl flex justify-between items-center shadow-sm hover:shadow-md transition border border-gray-100">
+                            <div>
+                                <p class="font-bold brand-text text-lg">Organização de Fiação</p>
+                                <p class="text-sm text-gray-500">Uso de canaletas e organizadores para acabamento.</p>
+                            </div>
+                            <p class="text-xl font-black text-gray-700">R$ 50,00</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-auto grid grid-cols-2 gap-8 items-end">
+                        <div class="bg-white p-6 rounded-xl border border-gray-100">
+                            <h4 class="font-bold text-gray-800 mb-2 flex items-center gap-2">
+                                <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h.01a1 1 0 100-2H10zm3 0a1 1 0 000 2h.01a1 1 0 100-2H13zM7 13a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h.01a1 1 0 100-2H10zm3 0a1 1 0 000 2h.01a1 1 0 100-2H13z" clip-rule="evenodd"/></svg>
+                                Pagamento via PIX
+                            </h4>
+                            <p class="text-xs text-gray-500">Chave: (38) 99866-2723</p>
+                            <p class="text-xs text-gray-500">Titular: Benedito Resolve</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-gray-400 text-sm font-bold uppercase mb-1">Total do Investimento</p>
+                            <div class="brand-bg inline-block px-8 py-4 rounded-2xl">
+                                <p class="text-3xl font-black text-white">R$ 200,00</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODELO 3: MINIMALISTA DIRETO -->
+            <div id="template-minimal" class="template-section hidden">
+                <div class="page-preview flex flex-col font-serif">
+                    <div class="flex justify-between items-center border-b pb-8 mb-12">
+                        <h1 class="text-3xl font-light text-gray-400 tracking-widest uppercase">Benedito<br><span class="font-bold text-gray-900">Resolve</span></h1>
+                        <img src="https://i.ibb.co/rGqBK9DT/antes-e-depois.jpg" class="w-20 grayscale hover:grayscale-0 transition" alt="Logo">
+                    </div>
+
+                    <div class="mb-12">
+                        <p class="text-gray-400 text-sm mb-1">Para:</p>
+                        <p class="text-2xl text-gray-900 border-b border-gray-100 pb-2">Carlos Magno</p>
+                    </div>
+
+                    <div class="space-y-8 mb-16">
+                        <div class="flex justify-between border-b border-gray-50 pb-4">
+                            <div>
+                                <p class="font-bold text-gray-800">Manutenção de Válvula Hydra</p>
+                                <p class="text-sm text-gray-400">Troca de reparo completo e vedação.</p>
+                            </div>
+                            <p class="font-mono text-gray-600">R$ 130,00</p>
+                        </div>
+                        <div class="flex justify-between border-b border-gray-50 pb-4">
+                            <div>
+                                <p class="font-bold text-gray-800">Desentupimento de Sifão</p>
+                                <p class="text-sm text-gray-400">Limpeza e ajuste de vedação.</p>
+                            </div>
+                            <p class="font-mono text-gray-600">R$ 40,00</p>
+                        </div>
+                    </div>
+
+                    <div class="ml-auto w-1/2">
+                        <div class="flex justify-between items-center text-3xl mb-8">
+                            <span class="font-light text-gray-400">Total:</span>
+                            <span class="font-black text-gray-900 underline decoration-green-400">R$ 170,00</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-auto text-xs text-gray-400 leading-relaxed max-w-sm">
+                        <p class="font-bold text-gray-600 mb-2">Termos e Condições</p>
+                        <p>O serviço inclui garantia legal de 90 dias. Materiais não descritos no orçamento não estão inclusos no valor total. Atendimento realizado com pontualidade e organização.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODELO 4: VISUAL & COLORIDO -->
+            <div id="template-visual" class="template-section hidden">
+                <div class="page-preview bg-brand-primary text-white p-0 overflow-hidden flex flex-col">
+                    <div class="brand-bg p-12 text-center">
+                        <img src="https://i.ibb.co/rGqBK9DT/antes-e-depois.jpg" class="w-24 h-24 mx-auto mb-6 rounded-full border-4 border-accent p-1 bg-white" alt="Logo">
+                        <h1 class="text-4xl font-black tracking-tighter uppercase mb-2">Orçamento Especial</h1>
+                        <p class="text-accent font-bold">Residência de Maria Clara</p>
+                    </div>
+
+                    <div class="flex-1 bg-white text-gray-800 p-12 rounded-t-[3rem] -mt-8">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                            <div class="bg-blue-50 p-6 rounded-3xl border-2 border-blue-100">
+                                <div class="w-10 h-10 accent-bg rounded-full flex items-center justify-center mb-4">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                </div>
+                                <h3 class="font-black brand-text text-xl">Revisão Elétrica</h3>
+                                <p class="text-sm text-gray-600 mt-2">Check-up em tomadas, troca de 3 interruptores e ajuste no quadro.</p>
+                                <p class="mt-4 font-black text-2xl text-gray-700">R$ 150,00</p>
+                            </div>
+                            <div class="bg-green-50 p-6 rounded-3xl border-2 border-green-100">
+                                <div class="w-10 h-10 brand-bg rounded-full flex items-center justify-center mb-4">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                                </div>
+                                <h3 class="font-black brand-text text-xl">Instalações</h3>
+                                <p class="text-sm text-gray-600 mt-2">Instalação de varal de teto e 4 quadros decorativos.</p>
+                                <p class="mt-4 font-black text-2xl text-gray-700">R$ 90,00</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between bg-gray-900 p-8 rounded-[2rem] text-white">
+                            <div>
+                                <p class="text-accent font-bold text-sm uppercase">Total à pagar</p>
+                                <p class="text-5xl font-black">R$ 240,00</p>
+                            </div>
+                            <div class="text-right hidden sm:block">
+                                <p class="text-xs opacity-50 mb-2">Aceitamos</p>
+                                <div class="flex gap-2">
+                                    <span class="px-3 py-1 bg-white/10 rounded-full text-[10px] font-bold">PIX</span>
+                                    <span class="px-3 py-1 bg-white/10 rounded-full text-[10px] font-bold">CARTÃO</span>
+                                    <span class="px-3 py-1 bg-white/10 rounded-full text-[10px] font-bold">DINHEIRO</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODELO 5: PREMIUM EXECUTIVO -->
+            <div id="template-premium" class="template-section hidden">
+                <div class="page-preview flex flex-col text-slate-800">
+                    <!-- Faixa Lateral Decorativa -->
+                    <div class="absolute top-0 right-0 w-32 h-32 accent-bg -mr-16 -mt-16 rotate-45 no-print"></div>
+
+                    <div class="flex justify-between items-start mb-16">
+                        <div class="space-y-4">
+                            <img src="https://i.ibb.co/rGqBK9DT/antes-e-depois.jpg" class="w-24 rounded-lg shadow-lg p-1 bg-white" alt="Logo">
+                            <h1 class="text-5xl font-black brand-text leading-none">ORÇAMENTO<br><span class="text-gray-300">PREMIUM</span></h1>
+                        </div>
+                        <div class="text-right space-y-1">
+                            <p class="font-bold text-xl uppercase tracking-widest text-accent">Benedito Resolve</p>
+                            <p class="text-sm">Rua dos Resolve, 123 - Centro</p>
+                            <p class="text-sm font-bold">(38) 9 9866-2723</p>
+                            <p class="text-xs text-gray-400 mt-4">REF: BR-PRM-2024-88</p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-12 mb-12">
+                        <div class="flex-1 border-l-4 border-gray-900 pl-6">
+                            <h3 class="text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Prezado(a)</h3>
+                            <p class="text-2xl font-bold">Dr. Fábio Mesquita</p>
+                            <p class="text-gray-500 mt-2 italic text-sm">"Abaixo detalhamos a proposta para a revitalização e manutenção técnica de sua residência conforme solicitado."</p>
+                        </div>
+                    </div>
+
+                    <div class="mb-12">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="text-left border-b-2 border-gray-900">
+                                    <th class="py-4 font-black uppercase text-xs tracking-widest">Serviço Especializado</th>
+                                    <th class="py-4 font-black uppercase text-xs tracking-widest text-right">Investimento</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                <tr>
+                                    <td class="py-6">
+                                        <p class="font-bold text-lg">Manutenção de Deck e Área Gourmet</p>
+                                        <p class="text-sm text-gray-500 mt-1">Ajuste de dobradiças, lubrificação de corrediças e reparo em ponto hidráulico.</p>
+                                    </td>
+                                    <td class="py-6 text-right font-black text-xl">R$ 380,00</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-6">
+                                        <p class="font-bold text-lg">Substituição de Iluminação LED</p>
+                                        <p class="text-sm text-gray-500 mt-1">Troca de 12 spots de embutir e verificação de reatores.</p>
+                                    </td>
+                                    <td class="py-6 text-right font-black text-xl">R$ 220,00</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="mt-auto bg-slate-50 p-8 rounded-3xl flex justify-between items-center">
+                        <div class="flex gap-4">
+                            <div class="text-center px-4">
+                                <p class="text-[10px] font-bold text-gray-400 uppercase">Garantia</p>
+                                <p class="font-bold">6 Meses</p>
+                            </div>
+                            <div class="border-l border-gray-200 h-8 mt-1"></div>
+                            <div class="text-center px-4">
+                                <p class="text-[10px] font-bold text-gray-400 uppercase">Execução</p>
+                                <p class="font-bold">1 Dia Útil</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-xs font-bold text-gray-400 uppercase mb-1 tracking-widest">Valor Total Proposto</p>
+                            <p class="text-4xl font-black brand-text">R$ 600,00</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="max-w-[210mm] mx-auto mt-8 text-center no-print">
+            <p class="text-sm text-slate-500">Desenvolvido para uso profissional da <strong>Benedito Resolve</strong>.</p>
+        </div>
+    </main>
+
+    <script>
+        function showTemplate(templateId) {
+            // Esconder todas as seções
+            document.querySelectorAll('.template-section').forEach(section => {
+                section.classList.add('hidden');
+            });
+
+            // Mostrar a selecionada
+            document.getElementById('template-' + templateId).classList.remove('hidden');
+
+            // Atualizar Menu
+            document.querySelectorAll('.menu-btn').forEach(btn => {
+                btn.classList.remove('bg-white/20', 'font-bold');
+                btn.querySelector('span').classList.replace('bg-white', 'bg-gray-400');
+            });
+
+            const activeBtn = document.querySelector(`.menu-btn[data-id="${templateId}"]`);
+            activeBtn.classList.add('bg-white/20', 'font-bold');
+            activeBtn.querySelector('span').classList.replace('bg-gray-400', 'bg-white');
+        }
+    </script>
+
+</body>
+</html>
